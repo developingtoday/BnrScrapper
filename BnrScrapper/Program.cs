@@ -14,9 +14,12 @@ namespace BnrScrapper
         static void Main(string[] args)
         {
             var bnrScrapper=new BnrRateService();
-            var robor = bnrScrapper.GetRates(DateTime.Today.AddDays(-10), DateTime.Today).Result;
-            robor.ForEach(Console.WriteLine);
-            Console.ReadKey();
+            var robor = bnrScrapper.GetRates(DateTime.Today.AddYears(-8), DateTime.Today.AddYears(-4)).Result;
+           // robor.ForEach(Console.WriteLine);
+            var repo = new RateRepository("");
+            
+            repo.InsertBatch(robor);
+            //Console.ReadKey();
         }
 
         static void HttpStuff()

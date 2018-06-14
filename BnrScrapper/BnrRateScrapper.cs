@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -11,6 +12,7 @@ namespace BnrScrapper
    public class BnrRateScrapper
     {
         private static readonly object locker=new object();
+
 
         private readonly HtmlDocument document;
 
@@ -31,29 +33,37 @@ namespace BnrScrapper
 
         private static List<RoborHistoric> ParseHtmlParallel(HtmlDocument doc)
         {
-            var list=new List<RoborHistoric>();
+            //var list=new List<RoborHistoric>();
             var startIndex = 3;
             var rowIndex = 3;
-            for (;;)
-            {
-                var check = doc.DocumentNode?.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[1]");
-                if (check == null)
-                {
-                    break;
-                }
-               
-                rowIndex++;
-            }
-            Parallel.For(startIndex, rowIndex--, a =>
+            var len = doc.DocumentNode?.SelectNodes($"//*[@id=\"GridView1\"]/tr").Count;
+            //rowIndex += len.GetValueOrDefault();
+            //for (;;)
+            //{
+            //    var check = doc.DocumentNode?.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[1]");
+            //    if (check == null)
+            //    {
+            //        break;
+            //    }
+
+            //    rowIndex++;
+            //    len++;
+            //}
+            //var listConc = new ConcurrentBag<RoborHistoric>();
+            var arr = new RoborHistoric[len.GetValueOrDefault()+rowIndex];
+            Parallel.For(startIndex, len.GetValueOrDefault(), new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, a =>
             {
                 var roborStuff = ExtractFromTemplate(doc, a);
-                lock (locker)
-                {
-                    list.Add(roborStuff);
-                }
+                //lock (locker)
+                //{
+                //    list.Add(roborStuff);
+                //}
+                //listConc.Add(roborStuff);
+                arr[a] = roborStuff;
+                //arr[a- startIndex] = roborStuff;
             });
             
-            return list;
+            return arr.Where(a=>a!=null).ToList();
 
         }
 
@@ -80,25 +90,16 @@ namespace BnrScrapper
 
         private static RoborHistoric ExtractFromTemplate(HtmlDocument doc,int rowIndex)
         {
-            var date = doc.DocumentNode?.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[1]")?.Nodes()?.Select(x => x.InnerText)
-                ?.FirstOrDefault();
-            var robid3m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[6]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robid6m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[7]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robid9m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[8]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robid12m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[9]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
+            var date = doc.DocumentNode?.SelectSingleNode($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[1]")?.InnerText;
+            var robid3m = doc.DocumentNode.SelectSingleNode($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[6]")?.InnerText;
+            var robid6m = doc.DocumentNode.SelectSingleNode($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[7]")?.InnerText;
+            var robid9m = doc.DocumentNode.SelectSingleNode($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[8]")?.InnerText;
+            var robid12m = doc.DocumentNode.SelectSingleNode($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[9]")?.InnerText;
 
-            var robor3m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[14]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robor6m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[15]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robor9m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[16]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robor12m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[17]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
+            var robor3m = doc.DocumentNode.SelectSingleNode($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[14]")?.InnerText;
+            var robor6m = doc.DocumentNode.SelectSingleNode($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[15]")?.InnerText;
+            var robor9m = doc.DocumentNode.SelectSingleNode($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[16]")?.InnerText;
+            var robor12m = doc.DocumentNode.SelectSingleNode($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[17]")?.InnerText;
 
             var roborStuff = new RoborHistoric()
             {
