@@ -11,121 +11,12 @@ namespace BnrScrapper
 {
     class Program
     {
-        private static readonly object locker=new object();
         static void Main(string[] args)
         {
-            using (var http = new System.Net.Http.HttpClient())
-            {
-                var dataStart = DateTime.Today.AddDays(-10);
-                var dataEnd= DateTime.Today.AddDays(-1);
-                var dateStr= $"{dataStart.Day }-{ dataStart.Month}-{ dataStart.Year}";
-                var dateSto= $"{dataEnd.Day }-{ dataEnd.Month}-{ dataEnd.Year}";
-                var request = $"http://bnr.ro/StatisticsReportHTML.aspx?icid=801&table=642&column=&startDate={dateStr}&stopDate={dateSto}";
-                //System.Net.Http.StringContent stringContent = new System.Net.Http.StringContent(str, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
-                var result = http.GetAsync(request).Result;
-                var strRes = result.Content.ReadAsStringAsync().Result;
-                var doc = new HtmlAgilityPack.HtmlDocument();
-                doc.LoadHtml(strRes);
-                Stopwatch sw=new Stopwatch();
-                sw.Start();
-                ParseHtml(doc);
-                sw.Stop();
-                Console.WriteLine("Non parallel: {0}", sw.Elapsed.ToString());
-                sw.Reset();
-                sw.Start();
-                var res=ParseHtmlParallel(doc);
-                sw.Stop();
-                Console.WriteLine("Parallel: {0}", sw.Elapsed.ToString());
-                Console.WriteLine("Count:{0}",res.Count);
-                //Console.WriteLine(roborStuff.ToString());
-                Console.ReadKey();
-            }
-        }
-
-        private static List<RoborHistoric> ParseHtmlParallel(HtmlDocument doc)
-        {
-            var list=new List<RoborHistoric>();
-            var startIndex = 3;
-            var rowIndex = 3;
-            for (;;)
-            {
-                var check = doc.DocumentNode?.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[1]");
-                if (check == null)
-                {
-                    break;
-                }
-               
-                rowIndex++;
-            }
-            Parallel.For(startIndex, rowIndex--, a =>
-            {
-                var roborStuff = ExtractFromTemplate(doc, a);
-                lock (locker)
-                {
-                   list.Add(roborStuff);
-                }
-            });
-            
-            return list;
-
-        }
-
-        private static List<RoborHistoric> ParseHtml(HtmlDocument doc)
-        {
-            var list = new List<RoborHistoric>();
-            var startIndex = 3;
-            var rowIndex = 3;
-            for (; ; )
-            {
-                var check = doc.DocumentNode?.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[1]");
-                if (check == null)
-                {
-                    break;
-                }
-                var roborStuff = ExtractFromTemplate(doc, rowIndex);
-                list.Add(roborStuff);
-                rowIndex++;
-            }
-
-            return list;
-
-        }
-
-        private static RoborHistoric ExtractFromTemplate(HtmlDocument doc,int rowIndex)
-        {
-            var date = doc.DocumentNode?.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[1]")?.Nodes()?.Select(x => x.InnerText)
-                ?.FirstOrDefault();
-            var robid3m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[6]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robid6m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[7]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robid9m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[8]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robid12m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[9]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-
-            var robor3m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[14]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robor6m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[15]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robor9m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[16]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-            var robor12m = doc.DocumentNode.SelectNodes($"//*[@id=\"GridView1\"]/tr[{rowIndex}]/td[17]").Nodes().Select(x => x.InnerText)
-                .FirstOrDefault();
-
-            var roborStuff = new RoborHistoric()
-            {
-                Data = DateTime.Parse(date),
-                Robid12M = decimal.Parse(robid12m,CultureInfo.InvariantCulture),
-                Robid3M = decimal.Parse(robid3m, CultureInfo.InvariantCulture),
-                Robid6M = decimal.Parse(robid6m, CultureInfo.InvariantCulture),
-                Robid9M = decimal.Parse(robid9m, CultureInfo.InvariantCulture),
-                Robor12M = decimal.Parse(robor12m, CultureInfo.InvariantCulture),
-                Robor3M = decimal.Parse(robor3m, CultureInfo.InvariantCulture),
-                Robor6M = decimal.Parse(robor6m, CultureInfo.InvariantCulture),
-                Robor9M = decimal.Parse(robor9m, CultureInfo.InvariantCulture)
-            };
-            return roborStuff;
+            var bnrScrapper=new BnrRateService();
+            var robor = bnrScrapper.GetRates(DateTime.Today.AddDays(-10), DateTime.Today).Result;
+            robor.ForEach(Console.WriteLine);
+            Console.ReadKey();
         }
 
         static void HttpStuff()
