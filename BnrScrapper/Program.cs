@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
+using BnrScrapperLogic;
 using HtmlAgilityPack;
 
 namespace BnrScrapper
@@ -13,11 +14,10 @@ namespace BnrScrapper
     {
         static void Main(string[] args)
         {
-            var bnrScrapper=new BnrRateService();
+            var bnrScrapper = new BnrRateService();
             var robor = bnrScrapper.GetRates(DateTime.Today.AddYears(-25), DateTime.Today).Result;
-            //robor.ForEach(Console.WriteLine);
-            var repo = new RateRepository("");
-            repo.InsertBatch(robor);
+            //var repo = new RateRepository("");
+            //repo.InsertBatch(robor);
             Console.WriteLine("E gata smecheria");
         }
     }

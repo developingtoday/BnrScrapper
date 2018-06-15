@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BnrScrapper
+namespace BnrScrapperLogic
 {
     public class RoborHistoric
     {

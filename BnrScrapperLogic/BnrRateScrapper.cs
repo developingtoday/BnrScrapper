@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
-namespace BnrScrapper
+namespace BnrScrapperLogic
 {
     public class BnrRateScrapper
     {

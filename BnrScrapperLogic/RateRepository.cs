@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 
-namespace BnrScrapper
+namespace BnrScrapperLogic
 {
     public class RateRepository
     {
