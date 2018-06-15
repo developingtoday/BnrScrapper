@@ -26,10 +26,13 @@ namespace BnrScrapper
                 dt.PrimaryKey = new[] { dt.Columns["RateDate"] };
                 SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
                 var cmdbuild = builder.GetInsertCommand(true);
+                cmdbuild.UpdatedRowSource = UpdateRowSource.None;
                 var cmdBuildDelete = builder.GetDeleteCommand(true);
-                var cmdBuildUpdate = builder.GetDeleteCommand(true);
+                cmdBuildDelete.UpdatedRowSource = UpdateRowSource.None;
+                var cmdBuildUpdate = builder.GetUpdateCommand(true);
+                cmdBuildUpdate.UpdatedRowSource = UpdateRowSource.None;
                 //adapter.InsertCommand = builder.GetInsertCommand(true);
-                //adapter.UpdateBatchSize = 10000;
+                adapter.UpdateBatchSize = 1;
                 adapter.InsertCommand.Connection = conn;
                 adapter.InsertCommand.Parameters.Add("@RateDate", SqlDbType.Date).SourceColumn="RateDate";
                 adapter.InsertCommand.Parameters.Add("@Robid3M", SqlDbType.Decimal).SourceColumn = "Robid3M";
@@ -44,6 +47,9 @@ namespace BnrScrapper
                 adapter.InsertCommand.CommandText = cmdbuild.CommandText;
                 adapter.UpdateCommand = cmdBuildUpdate;
                 adapter.DeleteCommand = cmdBuildDelete;
+                adapter.UpdateCommand.UpdatedRowSource = UpdateRowSource.None;
+                adapter.InsertCommand.UpdatedRowSource = UpdateRowSource.None;
+                adapter.DeleteCommand.UpdatedRowSource = UpdateRowSource.None;
                 foreach (var item in historics)
                 {
                     DataRow row;
@@ -70,7 +76,7 @@ namespace BnrScrapper
                     row[nameof(item.Robor12M)] = item.Robor12M;
                     if(insert) dt.Rows.Add(row);
                 }
-
+                
                 adapter.Update(dt);
             }
         }
