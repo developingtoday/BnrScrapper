@@ -10,7 +10,7 @@ namespace ScrapTimerFunction
         [FunctionName("BnrRoborFunction")]
         public static void Run([TimerTrigger("0 0 10-14 ? * MON,TUE,WED,THU,FRI *")]TimerInfo myTimer, TraceWriter log)
         {
-
+            log.Info("Starting execution");
             var connString = Environment.GetEnvironmentVariable("DatabaseConnectionString");
             var manager = new RoborManager(connString,new AzureLogger(log));
              
