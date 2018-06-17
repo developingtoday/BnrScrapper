@@ -15,6 +15,53 @@ namespace BnrScrapperLogic
             connection = conn;
         }
 
+        public void InsertBatchEuroRonRate(List<EuroRonRate> rates)
+        {
+            using (var conn=new SqlConnection(this.connection))
+            {
+                var adapter = new SqlDataAdapter("select r.* from dbo.EuroRonRates r", conn);
+                var dt = new DataTable();
+                adapter.Fill(dt);
+                adapter.InsertCommand = new SqlCommand();
+                dt.PrimaryKey = new[] { dt.Columns["RateDate"] };
+                SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
+                var cmdbuild = builder.GetInsertCommand(true);
+                cmdbuild.UpdatedRowSource = UpdateRowSource.None;
+                var cmdBuildDelete = builder.GetDeleteCommand(true);
+                cmdBuildDelete.UpdatedRowSource = UpdateRowSource.None;
+                var cmdBuildUpdate = builder.GetUpdateCommand(true);
+                adapter.InsertCommand = cmdbuild;
+                adapter.UpdateCommand = cmdBuildUpdate;
+                adapter.DeleteCommand = cmdBuildDelete;
+                cmdBuildUpdate.UpdatedRowSource = UpdateRowSource.None;
+                adapter.UpdateCommand.UpdatedRowSource = UpdateRowSource.None;
+                adapter.InsertCommand.UpdatedRowSource = UpdateRowSource.None;
+                adapter.DeleteCommand.UpdatedRowSource = UpdateRowSource.None;
+               // adapter.UpdateBatchSize = 1000;
+                foreach (var item in rates)
+                {
+                    DataRow row;
+                    var insert = false;
+                    if (!dt.Rows.Contains(item.Data))
+                    {
+                        insert = true;
+                        row = dt.NewRow();
+
+                    }
+                    else
+                    {
+                        row = dt.Rows.Find(item.Data);
+                    }
+
+                    row["RateDate"] = item.Data;
+                    row["Value"] = item.Valoare;
+                    if (insert) dt.Rows.Add(row);
+                }
+
+                adapter.Update(dt);
+            }
+        }
+
         public void InsertBatch(List<RoborHistoric> historics)
         {
             using (var conn = new SqlConnection(this.connection))

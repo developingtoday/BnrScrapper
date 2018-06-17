@@ -21,4 +21,10 @@ namespace BnrScrapperLogic
             return $"{nameof(Data)}: {Data}, {nameof(Robid3M)}: {Robid3M}, {nameof(Robid6M)}: {Robid6M}, {nameof(Robid9M)}: {Robid9M}, {nameof(Robid12M)}: {Robid12M}, {nameof(Robor3M)}: {Robor3M}, {nameof(Robor6M)}: {Robor6M}, {nameof(Robor9M)}: {Robor9M}, {nameof(Robor12M)}: {Robor12M}";
         }
     }
+
+    public class EuroRonRate
+    {
+        public DateTime Data { get; set; }
+        public decimal Valoare { get; set; }
+    }
 }

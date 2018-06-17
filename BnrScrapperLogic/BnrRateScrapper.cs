@@ -10,35 +10,37 @@ using HtmlAgilityPack;
 
 namespace BnrScrapperLogic
 {
-    public class BnrRateScrapper
+    public class BnrRateScrapper<T>
     {
-        private static readonly object locker = new object();
+        
 
 
-        private readonly HtmlDocument document;
+        private readonly HtmlDocument _document;
+        private readonly IHtmlMap<T> _mapper;
 
-        public BnrRateScrapper(Stream input)
+        protected BnrRateScrapper(Stream input,IHtmlMap<T> mapper)
         {
-            document = new HtmlDocument();
-            document.Load(input);
+            _document = new HtmlDocument();
+            _document.Load(input);
+            this._mapper = mapper;
         }
 
-        public List<RoborHistoric> GetValues()
+        public List<T> GetValues()
         {
-            return ParseHtmlParallel(document).OrderByDescending(a => a.Data).ToList();
+            return ParseHtmlParallel(_document);
         }
 
-        private static List<RoborHistoric> ParseHtmlParallel(HtmlDocument doc)
+        private  List<T> ParseHtmlParallel(HtmlDocument doc)
         {
             var startIndex = 3;
             var rowIndex = 3;
             var len = doc.DocumentNode?.SelectNodes($"//*[@id=\"GridView1\"]/tr").Count;
             if (len.GetValueOrDefault() == 0)
             {
-                return new List<RoborHistoric>();
+                return new List<T>();
             }
             var end = len.GetValueOrDefault() + 1;
-            var arr = new RoborHistoric[len.GetValueOrDefault() + rowIndex];
+            var arr = new T[len.GetValueOrDefault() + rowIndex];
             var grid = doc.DocumentNode?.SelectSingleNode($"//*[@id=\"GridView1\"]");
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -52,34 +54,25 @@ namespace BnrScrapperLogic
             return arr.Where(a => a != null).ToList();
         }
 
-        private static RoborHistoric ExtractFromTemplate(HtmlNode grid, int rowIndex)
+        private  T ExtractFromTemplate(HtmlNode grid, int rowIndex)
         {
             var tr = grid.ChildNodes.Where(e => e.Name == "tr").ToArray()[rowIndex];
+            return _mapper.Map(tr);
 
-            var date = tr.ChildNodes[1].InnerHtml;
-            var robid3M = tr.ChildNodes[6].InnerHtml;
-            var robid6M = tr.ChildNodes[7].InnerHtml;
-            var robid9M = tr.ChildNodes[8].InnerHtml;
-            var robid12M = tr.ChildNodes[9].InnerHtml;
+        }
+    }
 
-            var robor3M = tr.ChildNodes[14].InnerHtml;
-            var robor6M = tr.ChildNodes[15].InnerHtml;
-            var robor9M = tr.ChildNodes[16].InnerHtml;
-            var robor12M = tr.ChildNodes[17].InnerHtml;
+    public class BnrRoborScapper : BnrRateScrapper<RoborHistoric>
+    {
+        public BnrRoborScapper(Stream input) : base(input, new RoborMapper())
+        {
+        }
+    }
 
-            var roborStuff = new RoborHistoric()
-            {
-                Data = DateTime.Parse(date),
-                Robid12M = decimal.Parse(robid12M, CultureInfo.InvariantCulture),
-                Robid3M = decimal.Parse(robid3M, CultureInfo.InvariantCulture),
-                Robid6M = decimal.Parse(robid6M, CultureInfo.InvariantCulture),
-                Robid9M = decimal.Parse(robid9M, CultureInfo.InvariantCulture),
-                Robor12M = decimal.Parse(robor12M, CultureInfo.InvariantCulture),
-                Robor3M = decimal.Parse(robor3M, CultureInfo.InvariantCulture),
-                Robor6M = decimal.Parse(robor6M, CultureInfo.InvariantCulture),
-                Robor9M = decimal.Parse(robor9M, CultureInfo.InvariantCulture)
-            };
-            return roborStuff;
+    public class BnrEuroScapper : BnrRateScrapper<EuroRonRate>
+    {
+        public BnrEuroScapper(Stream input) : base(input, new EuroMapper())
+        {
         }
     }
 }
