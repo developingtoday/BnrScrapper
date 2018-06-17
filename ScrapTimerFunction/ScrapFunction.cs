@@ -18,19 +18,4 @@ namespace ScrapTimerFunction
             log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
         }
     }
-
-    public class AzureLogger : ILog
-    {
-        private readonly TraceWriter writer;
-
-        public AzureLogger(TraceWriter writer)
-        {
-            this.writer = writer;
-        }
-
-        public void Log(string msg)
-        {
-            writer.Info(msg);
-        }
-    }
 }
