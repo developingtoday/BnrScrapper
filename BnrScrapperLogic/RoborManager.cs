@@ -8,6 +8,7 @@ namespace BnrScrapperLogic
     public class RoborManager
     {
         private readonly BnrRateService _rateService;
+        
         private readonly RateRepository _rateRepository;
         private readonly ILog _log;
         public RoborManager(string connString,ILog log)
@@ -21,10 +22,15 @@ namespace BnrScrapperLogic
         {
             _log.Log($"Starting Date {startDate.ToShortDateString()} - End Date {endDate.ToShortDateString()}");
             var rates = await _rateService.GetRates(startDate, endDate);
+            var euroRates = await _rateService.GetEuroRate(startDate, endDate);
             _log.Log($"Rates found {rates.Count}");
-            _log.Log("Updating");
+            _log.Log($"Euro Ron Rates found {euroRates.Count}");
+            _log.Log("Updating Robor");
             _rateRepository.InsertBatch(rates);
-            _log.Log("End update");
+            _log.Log("End update Robor");
+            _log.Log("Updating Euro Ron Rate");
+            _rateRepository.InsertBatchEuroRonRate(euroRates);
+            _log.Log("End update Euro Ron Rate");
         }
     }
 }

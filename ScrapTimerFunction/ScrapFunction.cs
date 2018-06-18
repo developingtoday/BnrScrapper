@@ -8,7 +8,7 @@ namespace ScrapTimerFunction
     public static class ScrapFunction
     {
         [FunctionName("BnrRoborFunction")]
-        public static void Run([TimerTrigger("0 0 10-14 ? * MON,TUE,WED,THU,FRI *")]TimerInfo myTimer, TraceWriter log)
+        public static void Run([TimerTrigger("0 0 5-12 * * 1-5")]TimerInfo myTimer, TraceWriter log)
         {
             log.Info("Starting execution");
             var connString = Environment.GetEnvironmentVariable("DatabaseConnectionString");
