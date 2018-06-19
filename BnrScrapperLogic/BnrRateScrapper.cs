@@ -34,7 +34,7 @@ namespace BnrScrapperLogic
         {
             var startIndex = 3;
             var rowIndex = 3;
-            var len = doc.DocumentNode?.SelectNodes($"//*[@id=\"GridView1\"]/tr").Count;
+            var len = doc?.DocumentNode?.SelectNodes($"//*[@id=\"GridView1\"]/tr")?.Count;
             if (len.GetValueOrDefault() == 0)
             {
                 return new List<T>();
