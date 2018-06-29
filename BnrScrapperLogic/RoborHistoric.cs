@@ -35,7 +35,7 @@ namespace BnrScrapperLogic
 
     public class PushNotification
     {
-        public DateTime Data { get; set; }
+        public string Data { get; set; }
         public decimal Robor3M { get; set; }
         public decimal Robid3M { get; set; }
 
