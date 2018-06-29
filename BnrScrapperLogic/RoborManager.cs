@@ -18,7 +18,7 @@ namespace BnrScrapperLogic
             _rateRepository = new RateRepository(connString);
         }
 
-        public async Task DoMagic(DateTime startDate, DateTime endDate)
+        public async Task<Tuple<List<RoborHistoric>, List<EuroRonRate>>> DoMagic(DateTime startDate, DateTime endDate)
         {
             _log.Log($"Starting Date {startDate.ToShortDateString()} - End Date {endDate.ToShortDateString()}");
             var rates = await _rateService.GetRates(startDate, endDate);
@@ -31,6 +31,7 @@ namespace BnrScrapperLogic
             _log.Log("Updating Euro Ron Rate");
             _rateRepository.InsertBatchEuroRonRate(euroRates);
             _log.Log("End update Euro Ron Rate");
+            return new Tuple<List<RoborHistoric>, List<EuroRonRate>>(rates, euroRates);
         }
     }
 }

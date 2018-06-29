@@ -26,5 +26,24 @@ namespace BnrScrapperLogic
     {
         public DateTime Data { get; set; }
         public decimal Valoare { get; set; }
+
+        public override string ToString()
+        {
+            return $"{nameof(Data)}: {Data}, {nameof(Valoare)}: {Valoare}";
+        }
+    }
+
+    public class PushNotification
+    {
+        public DateTime Data { get; set; }
+        public decimal Robor3M { get; set; }
+        public decimal Robid3M { get; set; }
+
+        public decimal EuroRonRate { get; set; }
+
+        public override string ToString()
+        {
+            return $"{nameof(Data)}: {Data}, {nameof(Robor3M)}: {Robor3M}, {nameof(Robid3M)}: {Robid3M}, {nameof(EuroRonRate)}: {EuroRonRate}";
+        }
     }
 }
