@@ -24,29 +24,32 @@ namespace ScrapTimerFunction
                 log.Info("Starting execution");
                 var connString = Environment.GetEnvironmentVariable("DatabaseConnectionString");
                 var manager = new RoborManager(connString, new AzureLogger(log));
+                var robors = manager.GetRobors(DateTime.Today, DateTime.Today);
+                log.Info($"Querying db on current date befor running scrapper, return {robors.Count}");
                 var result=manager.DoMagic(DateTime.Today, DateTime.Today).Result;
                 var push=new PushNotification()
                 {
                     Data = DateTime.Today.ToString("d"),
-                    EuroRonRate = (result.Item2.FirstOrDefault()??new EuroRonRate()).Valoare,
-                    Robor3M = (result.Item1.FirstOrDefault() ?? new RoborHistoric()).Robor3M,
-                    Robid3M = (result.Item1.FirstOrDefault() ?? new RoborHistoric()).Robid3M
+                    Robor3M = (result.FirstOrDefault() ?? new RoborHistoric()).Robor3M,
+                    Robid3M = (result.FirstOrDefault() ?? new RoborHistoric()).Robid3M
                 };
+                var sentPush = push.Robid3M != 0 && push.Robor3M != 0;
                 log.Info($"Push notification {push}");
                 var json = JsonConvert.SerializeObject(push,Formatting.None,new JsonSerializerSettings()
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 });
-                log.Info($"Push notification {json}");
-                using (var client = new HttpClient())
+
+                if (sentPush)
                 {
-                    //var request =
-                    //    new HttpRequestMessage(HttpMethod.Post, Environment.GetEnvironmentVariable("PushHttp"));
-                    
-                    //request.Content = new StringContent(json);
-                    //client.SendAsync(request).Wait();
-                    
-                    var jmecherie=client.PostAsync(Environment.GetEnvironmentVariable("PushHttp"), new StringContent(json,Encoding.UTF8,"application/json")).Result;
+                    if (!robors.Any())
+                    {
+                        log.Info($"Push notification json {json}");
+                        using (var client = new HttpClient())
+                        {
+                            var jmecherie = client.PostAsync(Environment.GetEnvironmentVariable("PushHttp"), new StringContent(json, Encoding.UTF8, "application/json")).Result;
+                        }
+                    }
                 }
 
                 log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
