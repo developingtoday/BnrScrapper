@@ -24,15 +24,17 @@ namespace ScrapTimerFunction
                 log.Info("Starting execution");
                 var connString = Environment.GetEnvironmentVariable("DatabaseConnectionString");
                 var manager = new RoborManager(connString, new AzureLogger(log));
-                var robors = manager.GetRobors(DateTime.Today, DateTime.Today);
-                log.Info($"Querying db on current date befor running scrapper, return {robors.Count}");
+                var robors = manager.GetRecentRobor();
+                log.Info($"Querying db on current date befor running scrapper, return {robors.ToString()}");
                 var result=manager.DoMagic(DateTime.Today, DateTime.Today).Result;
                 var push=new PushNotification()
                 {
                     Data = DateTime.Today.ToString("d"),
                     Robor3M = (result.FirstOrDefault() ?? new RoborHistoric()).Robor3M,
-                    Robid3M = (result.FirstOrDefault() ?? new RoborHistoric()).Robid3M
+                    Robid3M = (result.FirstOrDefault() ?? new RoborHistoric()).Robid3M,
+                  
                 };
+                push.Delta = push.Robor3M - robors.Robor3M;
                 var sentPush = push.Robid3M != 0 && push.Robor3M != 0;
                 log.Info($"Push notification {push}");
                 var json = JsonConvert.SerializeObject(push,Formatting.None,new JsonSerializerSettings()
@@ -42,7 +44,7 @@ namespace ScrapTimerFunction
 
                 if (sentPush)
                 {
-                    if (!robors.Any())
+                    if (robors.Data.Date!=DateTime.Today.Date)
                     {
                         log.Info($"Push notification json {json}");
                         using (var client = new HttpClient())

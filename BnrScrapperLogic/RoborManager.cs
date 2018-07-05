@@ -44,5 +44,10 @@ namespace BnrScrapperLogic
         {
             return _rateRepository.GetRobors(from, to);
         }
+
+        public RoborHistoric GetRecentRobor()
+        {
+            return _rateRepository.GetRoborRecent();
+        }
     }
 }

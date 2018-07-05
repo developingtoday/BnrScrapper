@@ -41,6 +41,8 @@ namespace BnrScrapperLogic
 
         public decimal EuroRonRate { get; set; }
 
+        public decimal Delta { get; set; }
+
         public override string ToString()
         {
             return $"{nameof(Data)}: {Data}, {nameof(Robor3M)}: {Robor3M}, {nameof(Robid3M)}: {Robid3M}, {nameof(EuroRonRate)}: {EuroRonRate}";

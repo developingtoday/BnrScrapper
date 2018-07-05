@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 
 namespace BnrScrapperLogic
@@ -94,6 +95,46 @@ namespace BnrScrapperLogic
                                 
                             }
                             return lst;
+                        }
+                    }
+                    finally
+                    {
+                        sqlConn.Close();
+                    }
+                }
+            }
+        }
+
+        public RoborHistoric GetRoborRecent()
+        {
+            using (var sqlConn = new SqlConnection(this.connection))
+            {
+                using (var cmd = sqlConn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Top 1 x.* from dbo.Rates x order by x.RateDate desc";
+                    sqlConn.Open();
+                    try
+                    {
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            var lst = new List<RoborHistoric>();
+                            while (reader.Read())
+                            {
+
+                                var obj = new RoborHistoric();
+                                obj.Data = reader.GetDateTime(reader.GetOrdinal("RateDate"));
+                                obj.Robid12M = reader.GetDecimal(reader.GetOrdinal(nameof(obj.Robid12M)));
+                                obj.Robor12M = reader.GetDecimal(reader.GetOrdinal(nameof(obj.Robor12M)));
+                                obj.Robid3M = reader.GetDecimal(reader.GetOrdinal(nameof(obj.Robid3M)));
+                                obj.Robor3M = reader.GetDecimal(reader.GetOrdinal(nameof(obj.Robor3M)));
+                                obj.Robid6M = reader.GetDecimal(reader.GetOrdinal(nameof(obj.Robid6M)));
+                                obj.Robor6M = reader.GetDecimal(reader.GetOrdinal(nameof(obj.Robor6M)));
+                                obj.Robid9M = reader.GetDecimal(reader.GetOrdinal(nameof(obj.Robid9M)));
+                                obj.Robor9M = reader.GetDecimal(reader.GetOrdinal(nameof(obj.Robor9M)));
+                                lst.Add(obj);
+
+                            }
+                            return lst.FirstOrDefault()??new RoborHistoric();
                         }
                     }
                     finally
