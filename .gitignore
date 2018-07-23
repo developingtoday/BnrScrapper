@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /ScrapTimerFunction/Properties/PublishProfiles/pocrate - Web Deploy.pubxml
+/RateApi/Properties/launchSettings.json
