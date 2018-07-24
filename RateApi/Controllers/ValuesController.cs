@@ -11,7 +11,7 @@ namespace RateApi.Controllers
     {
         public ValuesController()
         {
-            throw new Exception("Greseala");
+            //throw new Exception("Greseala");
         }
 
         // GET api/values
@@ -37,9 +37,10 @@ namespace RateApi.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public JsonResult Put(int id, [FromBody]string value)
         {
-        }
+            return Json(value);
+        }   
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
