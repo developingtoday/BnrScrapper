@@ -37,7 +37,7 @@ namespace RateApi.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public JsonResult Put(int id, [FromBody]string value)
+        public JsonResult Put(int id, [FromBody]object value)
         {
             return Json(value);
         }   

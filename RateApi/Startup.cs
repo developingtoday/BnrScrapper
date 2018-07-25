@@ -42,8 +42,8 @@ namespace RateApi
         {
          
             services.AddSingleton<TelemetryClient>(new TelemetryClient());
-            services.AddTransient<IActionFilter, AiFilter>();
-            services.AddMvc(options => { options.Filters.Add<AiFilter>(); });
+            services.AddMvc();
+
         }
 
 
@@ -75,6 +75,7 @@ namespace RateApi
             };
             aiconfiguration.DisableTelemetry = bool.Parse(Configuration["ApplicationInsights:DisableInstrumentation"]);
             aiconfiguration.TelemetryInitializers.Add(new AiTelemetryInitializer(config));
+            app.UseMiddleware<ApplicationInsightsMiddleware>();
             app.UseMvc();
             
             app.UseSwaggerUi(typeof(Startup).GetTypeInfo().Assembly, settings =>
@@ -178,30 +179,6 @@ namespace RateApi
         }
     }
 
-    public class RequestBodyInitializer : ITelemetryInitializer
-    {
-        readonly IHttpContextAccessor httpContextAccessor;
-
-        public RequestBodyInitializer(IHttpContextAccessor httpContextAccessor)
-        {
-            this.httpContextAccessor = httpContextAccessor;
-        }
-
-        public void Initialize(ITelemetry telemetry)
-        {
-            if (!(telemetry is RequestTelemetry requestTelemetry)) return;
-            if (!httpContextAccessor.HttpContext.Request.Body.CanRead) return;
-            //Allows re-usage of the stream
-            httpContextAccessor.HttpContext.Request.EnableRewind();
-
-            var stream = new StreamReader(httpContextAccessor.HttpContext.Request.Body);
-            var body = stream.ReadToEnd();
-
-            //Reset the stream so data is not lost
-            httpContextAccessor.HttpContext.Request.Body.Position = 0;
-            requestTelemetry.Properties.Add("body", body);
-        }
-    }
 }
 
 
