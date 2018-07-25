@@ -24,49 +24,45 @@ namespace RateApi
 
         public async Task Invoke(HttpContext context)
         {
-            //using (var operation =
-            //    _telemetryClient.StartOperation<RequestTelemetry>(context.Request.GetUri().ToString()))
-            //{
-            //    var request = context.Request;
-            //    if (request != null)
-            //    {
-            //        request.EnableRewind();
-            //        var sr2 = new StreamReader(request.Body);
-            //        var body = sr2.ReadToEnd();
-            //        if (!string.IsNullOrEmpty(body))
-            //        {
-            //            operation.Telemetry.Properties.Add("body", body);
-            //        }
-            //        request.Body.Position = 0L;
-            //    }
-            //}
+         
             var bodyRequest = await GetBodyRequest(context);
+            
             var response = string.Empty;
-
             var originalStream = context.Response.Body;
-            using (var responseStream=new MemoryStream())
+            try
             {
-                context.Response.Body = responseStream;
-                await _next.Invoke(context);
-                response = await GetResponseAsString(context.Response);
-                await responseStream.CopyToAsync(originalStream);
+                using (var responseStream = new MemoryStream())
+                {
+                    context.Response.Body = responseStream;
+                    await _next.Invoke(context);
+                    response = await GetResponseAsString(context.Response);
+                    await responseStream.CopyToAsync(originalStream);
+                }
+
+                TrackOperation(context, bodyRequest);
+                TrackOperation(context, response);
+            }
+            catch (Exception)
+            {
+                
+                TrackOperation(context, bodyRequest,500);
+                throw;
             }
 
+
+        }
+
+        private void TrackOperation(HttpContext context, string bodyRequest,int statusCode=200)
+        {
             using (var operation =
                 _telemetryClient.StartOperation<RequestTelemetry>(context.Request.GetUri().ToString()))
             {
+                operation.Telemetry.ResponseCode = statusCode.ToString();
                 if (!string.IsNullOrEmpty(bodyRequest))
                 {
-                    operation.Telemetry.Properties.Add("body",bodyRequest);
-                }
-
-                if (!string.IsNullOrEmpty(response))
-                {
-                    operation.Telemetry.Properties.Add("result",response);
+                    operation.Telemetry.Properties.Add("body", bodyRequest);
                 }
             }
-
-
         }
 
         private async Task<string> GetBodyRequest(HttpContext context)
