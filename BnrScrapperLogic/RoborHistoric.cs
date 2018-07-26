@@ -4,6 +4,7 @@ namespace BnrScrapperLogic
 {
     public class RoborHistoric
     {
+
         public DateTime Data { get; set; }
 
         public decimal Robid3M { get; set; }

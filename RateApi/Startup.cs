@@ -44,7 +44,7 @@ namespace RateApi
          
             services.AddSingleton<TelemetryClient>(new TelemetryClient());
             services.AddTransient<IRateRepository>(x =>
-                new RateRepository(Environment.GetEnvironmentVariable("DatabaseConnectionString")));
+                new DapperRateRepository(Environment.GetEnvironmentVariable("DatabaseConnectionString")));
             services.AddMvc();
 
         }

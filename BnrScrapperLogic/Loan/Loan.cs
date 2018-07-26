@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace BnrScrapperLogic.Loan
 {
@@ -32,7 +33,28 @@ namespace BnrScrapperLogic.Loan
             return Math.Round(PMT(Rate, Months, Ammount), 2);
         }
 
-       
 
+        public List<LoanTransaction> GenerateLoanTransactions()
+        {
+
+            var monthlyPayment=MonthlyPayment() ;
+            var loanAmmount = Ammount;
+            var lst = new List<LoanTransaction>();
+            for (int i = 1; i <= Months; i++)
+            {
+                
+                var dobandaVal = Math.Round(Ammount * Rate / 100 / 12, 2);
+                var capital = monthlyPayment - dobandaVal;
+                loanAmmount -= capital;
+                var obj = new LoanTransaction(RateDateOfPayment.AddMonths(i), dobandaVal, capital, monthlyPayment, Math.Round(loanAmmount,2));
+                if (loanAmmount <= 0)
+                {
+                    break;
+                }
+                lst.Add(obj);
+
+            }
+            return lst;
+        }
     }
 }
