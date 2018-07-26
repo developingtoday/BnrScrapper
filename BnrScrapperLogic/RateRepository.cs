@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BnrScrapperLogic
 {
-    public class RateRepository
+    public class RateRepository : IRateRepository
     {
         private readonly string connection;
 

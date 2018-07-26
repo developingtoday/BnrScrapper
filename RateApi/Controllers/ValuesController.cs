@@ -11,7 +11,7 @@ namespace RateApi.Controllers
     {
         public ValuesController()
         {
-            throw new Exception("Greseala");
+            //throw new Exception("Greseala");
         }
 
         // GET api/values

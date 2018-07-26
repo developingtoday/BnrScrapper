@@ -6,6 +6,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using BnrScrapperLogic;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
@@ -42,6 +43,8 @@ namespace RateApi
         {
          
             services.AddSingleton<TelemetryClient>(new TelemetryClient());
+            services.AddTransient<IRateRepository>(x =>
+                new RateRepository(Environment.GetEnvironmentVariable("DatabaseConnectionString")));
             services.AddMvc();
 
         }
