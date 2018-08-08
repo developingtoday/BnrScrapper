@@ -14,6 +14,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\.nuget\packages\newtonsoft.json\11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="StackExchange.Redis.StrongName">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\stackexchange.redis.strongname\1.2.4\lib\netstandard1.5\StackExchange.Redis.StrongName.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -32,9 +32,9 @@ namespace RateApi
         }
 
         [HttpPost]
-        public void SetLoan([FromBody] LoanInformation information)
+        public List<EuroRonRate> GetEuroRates([FromQuery] DateTime? begin, [FromQuery] DateTime? end)
         {
-
+            throw new NotImplementedException();
         }
 
 
