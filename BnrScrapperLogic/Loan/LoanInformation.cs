@@ -15,8 +15,4 @@ namespace BnrScrapperLogic.Loan
 
         public Loan Loan { get; set; }
     }
-
-    public static class LoanReturnService
-    {
-    }
 }
