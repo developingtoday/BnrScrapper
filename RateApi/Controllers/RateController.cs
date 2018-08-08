@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BnrScrapperLogic;
+using BnrScrapperLogic.Loan;
 using Microsoft.AspNetCore.Mvc;
 
 namespace RateApi
@@ -28,6 +29,12 @@ namespace RateApi
                 };
             }
             return _rateRepository.GetRobors(begin ?? DateTime.MinValue, end ?? DateTime.MaxValue);
+        }
+
+        [HttpPost]
+        public void SetLoan([FromBody] LoanInformation information)
+        {
+
         }
 
 

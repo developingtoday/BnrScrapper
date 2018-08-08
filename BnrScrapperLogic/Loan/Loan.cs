@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace BnrScrapperLogic.Loan
 {
@@ -28,12 +29,13 @@ namespace BnrScrapperLogic.Loan
             return (rate + (rate / denominator)) * loanAmount;
         }
 
+        
         public double MonthlyPayment()
         {
             return Math.Round(PMT(Rate, Months, Ammount), 2);
         }
 
-
+        
         public List<LoanTransaction> GenerateLoanTransactions()
         {
 

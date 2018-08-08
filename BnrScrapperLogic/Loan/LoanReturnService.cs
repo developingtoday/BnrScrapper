@@ -11,7 +11,7 @@ namespace BnrScrapperLogic.Loan
 
         public double BankRate { get; set; }
 
-        public double BankMargin { get; set; }
+        public string BankMargin { get; set; }
 
         public Loan Loan { get; set; }
     }

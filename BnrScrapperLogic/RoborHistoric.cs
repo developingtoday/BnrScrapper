@@ -34,7 +34,7 @@ namespace BnrScrapperLogic
         }
     }
 
-    public class PushNotification
+    public class RatePushNotification
     {
         public string Data { get; set; }
         public decimal Robor3M { get; set; }
@@ -48,5 +48,7 @@ namespace BnrScrapperLogic
         {
             return $"{nameof(Data)}: {Data}, {nameof(Robor3M)}: {Robor3M}, {nameof(Robid3M)}: {Robid3M}, {nameof(EuroRonRate)}: {EuroRonRate}";
         }
+
+        public bool SendRoborPush => Robid3M != 0 && this.Robor3M != 0;
     }
 }
