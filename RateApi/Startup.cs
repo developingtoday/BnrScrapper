@@ -12,6 +12,7 @@ using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -45,6 +46,21 @@ namespace RateApi
             services.AddSingleton<TelemetryClient>(new TelemetryClient());
             services.AddTransient<IRateRepository>(x =>
                 new DapperRateRepository(Environment.GetEnvironmentVariable("DatabaseConnectionString")));
+            string domain = $"https://{Configuration["Auth0:Domain"]}/";
+            services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(o =>
+            {
+                o.Authority = domain;
+                o.Audience = Configuration["Auth0:ApiIdentifier"];
+            });
+            services.AddAuthorization(o =>
+            {
+                o.AddPolicy("read:messages",
+                    policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
+            });
             services.AddMvc();
 
         }
@@ -79,6 +95,7 @@ namespace RateApi
             aiconfiguration.DisableTelemetry = bool.Parse(Configuration["ApplicationInsights:DisableInstrumentation"]);
             aiconfiguration.TelemetryInitializers.Add(new AiTelemetryInitializer(config));
             app.UseMiddleware<ApplicationInsightsMiddleware>();
+            app.UseAuthentication();
             app.UseMvc();
             
             app.UseSwaggerUi(typeof(Startup).GetTypeInfo().Assembly, settings =>
