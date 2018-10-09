@@ -10,7 +10,7 @@ import {
   MatButtonModule,
   MatToolbarModule,
   MatSidenavModule,
-  MatListModule
+  MatListModule, MatTableModule, MatPaginatorModule, MatSortModule
 } from "@angular/material";
 import { LayoutModule } from "@angular/cdk/layout";
 import { SidenavComponent } from "./sidenav/sidenav.component";
@@ -18,8 +18,10 @@ import { CallbackComponent } from "./callback/callback.component";
 import { AuthService } from "./shared/Auth.service";
 import { RouterModule} from "@angular/router";
 import { ROUTES } from './app.routes';
+import { RatedataComponent } from './ratedata/ratedata.component';
+import { HomeComponent } from './home/home.component';
 @NgModule({
-  declarations: [AppComponent, SidenavComponent, CallbackComponent],
+  declarations: [AppComponent, SidenavComponent, CallbackComponent, RatedataComponent, HomeComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -32,7 +34,10 @@ import { ROUTES } from './app.routes';
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
-    RouterModule.forRoot(ROUTES)
+    RouterModule.forRoot(ROUTES),
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule
   ],
   providers: [AuthService],
   bootstrap: [AppComponent]
