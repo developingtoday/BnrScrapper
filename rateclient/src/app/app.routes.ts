@@ -7,6 +7,6 @@ import { HomeComponent } from './home/home.component';
 export const ROUTES: Routes = [
   { path: '', component: HomeComponent },
   { path: 'callback', component: CallbackComponent },
-  {path:'rates', component:RatedataComponent}
+  {path:'rates', component:RatedataComponent},
   { path: '**', redirectTo: '' }
 ];
