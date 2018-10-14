@@ -10,7 +10,7 @@ import {
   MatButtonModule,
   MatToolbarModule,
   MatSidenavModule,
-  MatListModule, MatTableModule, MatPaginatorModule, MatSortModule
+  MatListModule, MatTableModule, MatPaginatorModule, MatSortModule, MAT_LABEL_GLOBAL_OPTIONS, MatCheckboxModule, MatInputModule, MatSelectModule, MatRadioModule, MatDatepickerModule, MatNativeDateModule
 } from "@angular/material";
 import { LayoutModule } from "@angular/cdk/layout";
 import { SidenavComponent } from "./sidenav/sidenav.component";
@@ -20,10 +20,18 @@ import { RouterModule} from "@angular/router";
 import { ROUTES } from './app.routes';
 import { RatedataComponent } from './ratedata/ratedata.component';
 import { HomeComponent } from './home/home.component';
+import { LoanComponent } from './loan/loan.component';
+import { LoanEditorComponent } from './loaneditor/loaneditor.component';
+import { CommonModule } from "@angular/common";
+import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 @NgModule({
-  declarations: [AppComponent, SidenavComponent, CallbackComponent, RatedataComponent, HomeComponent],
+  declarations: [AppComponent, SidenavComponent, CallbackComponent,
+    RatedataComponent, HomeComponent, LoanComponent, LoanEditorComponent],
   imports: [
     BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
     BrowserAnimationsModule,
     MatGridListModule,
     MatCardModule,
@@ -34,12 +42,21 @@ import { HomeComponent } from './home/home.component';
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
-    RouterModule.forRoot(ROUTES),
     MatTableModule,
     MatPaginatorModule,
-    MatSortModule
+    MatSortModule,
+    MatCheckboxModule,
+    MatInputModule,
+    MatSelectModule,
+    MatRadioModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    RouterModule.forRoot(ROUTES),
+
   ],
-  providers: [AuthService],
+  providers: [AuthService,
+  {provide:MAT_LABEL_GLOBAL_OPTIONS, useValue: {float: 'always'}}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
