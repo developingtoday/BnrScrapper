@@ -1,5 +1,5 @@
-<div class="example-container">
-    <form class="example-container" [formGroup]="options">
+<div style="margin-top:2.3%" class="example-container">
+    <!-- <form class="example-container" [formGroup]="options">
       <div>
         <label>Float label: </label>
         <mat-radio-group formControlName="floatLabel">
@@ -8,11 +8,11 @@
           <mat-radio-button value="never">Never</mat-radio-button>
         </mat-radio-group>
       </div>
-    </form>
+    </form> -->
 
     <mat-form-field
         [hideRequiredMarker]="options.value.hideRequired"
-        [floatLabel]="options.value.floatLabel">
+        [floatLabel]="auto">
       <input matInput placeholder="Name" required>
     </mat-form-field>
 
@@ -22,7 +22,7 @@
         <mat-datepicker-toggle matSuffix [for]="dtpLoanTransaction"></mat-datepicker-toggle>
         <mat-datepicker #dtpLoanTransaction></mat-datepicker>
       </mat-form-field>
-      <mat-form-field [floatLabel]="options.value.floatLabel" style="padding-right:1rem">
+      <mat-form-field [floatLabel]="auto" style="padding-right:1rem">
           <input matInput placeholder="No. of months">
         </mat-form-field>
       <mat-form-field>
@@ -31,25 +31,20 @@
           <mat-datepicker #dtpLoanEnd></mat-datepicker>
         </mat-form-field>
 </div>
-
-
-
-
-
-
-
-
-    <mat-form-field [floatLabel]="options.value.floatLabel">
+    <mat-form-field [floatLabel]="auto">
         <input matInput placeholder="Fixed interest rate">
       </mat-form-field>
-
     <mat-form-field
         [hideRequiredMarker]="options.value.hideRequired"
-        [floatLabel]="options.value.floatLabel">
+        [floatLabel]="auto">
       <mat-select required>
         <mat-option>-- None --</mat-option>
         <mat-option value="option">ROBOR3M</mat-option>
       </mat-select>
       <mat-label>Variable rate</mat-label>
     </mat-form-field>
+      <mat-checkbox>
+        Daily mail
+      </mat-checkbox>
   </div>
+  <button style="float:right" mat-stroked-button color="primary">Save</button>
