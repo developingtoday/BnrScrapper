@@ -10,7 +10,7 @@
     <mat-nav-list>
       <a mat-list-item [routerLink]="['/loan']" routerLinkActive="router-link-active" >My Loans</a>
       <a mat-list-item [routerLink]="['/rates']" routerLinkActive="router-link-active"  >BNR Rates</a>
-      <a mat-list-item (click)="logout()">Logout</a>
+      <a *ngIf='this.auth.isAuthenticated()' mat-list-item (click)="logout()">Logout</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>

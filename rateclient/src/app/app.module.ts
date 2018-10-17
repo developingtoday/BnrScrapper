@@ -24,6 +24,7 @@ import { LoanComponent } from './loan/loan.component';
 import { LoanEditorComponent } from './loaneditor/loaneditor.component';
 import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";
+import { AuthguardService } from "./shared/authguard.service";
 @NgModule({
   declarations: [AppComponent, SidenavComponent, CallbackComponent,
     RatedataComponent, HomeComponent, LoanComponent, LoanEditorComponent],
@@ -54,13 +55,13 @@ import { ReactiveFormsModule, FormsModule } from "@angular/forms";
     RouterModule.forRoot(ROUTES),
 
   ],
-  providers: [AuthService,
+  providers: [AuthService,AuthguardService,
   {provide:MAT_LABEL_GLOBAL_OPTIONS, useValue: {float: 'always'}}
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
   constructor(public auth: AuthService) {
-    auth.handleAuthentication();
+
   }
 }

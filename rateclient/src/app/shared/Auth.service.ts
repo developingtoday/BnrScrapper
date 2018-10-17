@@ -37,7 +37,7 @@ export class AuthService {
       if (authResult && authResult.accessToken && authResult.idToken) {
         window.location.hash = "";
         this.setSession(authResult);
-        this.router.navigate(["/home"]);
+        this.getProfile(authResult);
       } else if (err) {
         this.router.navigate(["/home"]);
         console.log(err);
@@ -45,6 +45,28 @@ export class AuthService {
         this.login();
       }
     });
+  }
+
+  private redirect() {
+    // Redirect with or without 'tab' query parameter
+    // Note: does not support additional params besides 'tab'
+    const fullRedirect = decodeURI(localStorage.getItem('authRedirect'));
+    const redirectArr = fullRedirect.split('?tab=');
+    const navArr = [redirectArr[0] || '/'];
+    const tabObj = redirectArr[1] ? { queryParams: { tab: redirectArr[1] }} : null;
+
+    if (!tabObj) {
+      this.router.navigate(navArr);
+    } else {
+      this.router.navigate(navArr, tabObj);
+    }
+    // Redirection completed; clear redirect from storage
+    this.clearRedirect();
+  }
+
+  private clearRedirect() {
+    // Remove redirect from localStorage
+    localStorage.removeItem('authRedirect');
   }
 
   private setSession(authResult): void {
@@ -63,7 +85,10 @@ export class AuthService {
     localStorage.removeItem("id_token");
     localStorage.removeItem("expires_at");
     // Go back to the home route
+    this.clearRedirect();
     this.router.navigate(["/"]);
+    this.userProfile$.next(null);
+
   }
 
   public isAuthenticated(): boolean {
@@ -73,19 +98,13 @@ export class AuthService {
     return new Date().getTime() < expiresAt;
   }
 
-  public getProfile(cb): void {
-    const accessToken = localStorage.getItem("access_token");
-    if (!accessToken) {
-      throw new Error("Access token must exist to fetch profile");
-    }
-
+  private getProfile(authresult): void {
     const self = this;
-    this.auth0.client.userInfo(accessToken, (err, profile) => {
+    this.auth0.client.userInfo(authresult.accessToken, (err, profile) => {
       if (profile) {
         self.userProfile$.next(profile);
-
+        this.redirect();
       }
-      cb(err, profile);
     });
   }
 }
