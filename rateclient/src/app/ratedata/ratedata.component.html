@@ -1,16 +1,21 @@
 <div class="mat-elevation-z8">
   <table mat-table #table [dataSource]="dataSource" matSort aria-label="Elements">
     <!-- Id Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
-      <td mat-cell *matCellDef="let row">{{row.id}}</td>
+    <ng-container matColumnDef="data">
+      <th mat-header-cell fxFlex='100px' *matHeaderCellDef mat-sort-header>Date</th>
+      <td mat-cell  fxFlex='100px' *matCellDef="let row">{{row.data | date}}</td>
     </ng-container>
 
     <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-      <td mat-cell *matCellDef="let row">{{row.name}}</td>
+    <ng-container matColumnDef="robor3M">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ROBOR3M</th>
+      <td mat-cell *matCellDef="let row">{{row.robor3M}}</td>
     </ng-container>
+
+    <ng-container matColumnDef="robor6M">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ROBOR6M</th>
+        <td mat-cell *matCellDef="let row">{{row.robor6M}}</td>
+      </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>

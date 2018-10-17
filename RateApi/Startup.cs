@@ -61,6 +61,7 @@ namespace RateApi
                 o.AddPolicy("read:messages",
                     policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
             });
+            services.AddCors();
             services.AddMvc();
 
         }
@@ -96,6 +97,8 @@ namespace RateApi
             aiconfiguration.TelemetryInitializers.Add(new AiTelemetryInitializer(config));
             app.UseMiddleware<ApplicationInsightsMiddleware>();
             app.UseAuthentication();
+            app.UseCors(builder=>builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+            );
             app.UseMvc();
             
             app.UseSwaggerUi(typeof(Startup).GetTypeInfo().Assembly, settings =>

@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Router, Route } from "@angular/router";
-import { filter } from "rxjs/operators";
+import { filter, mergeMap } from "rxjs/operators";
 import * as auth0 from "auth0-js";
-import { Subject } from "rxjs";
+import { Subject, Observable, timer, of, BehaviorSubject } from "rxjs";
 
 (window as any).global = window;
 
@@ -16,14 +16,16 @@ export class AuthService {
     scope: "openid email profile"
   });
 
-  private userProfile$: Subject<any>;
+  private userProfile$: BehaviorSubject<any>;
+  private refreshSub:any;
 
   get userProfileSubject(): Subject<any> {
     return this.userProfile$;
 }
 
   constructor(private router: Router) {
-    this.userProfile$ = new Subject<any>();
+    this.userProfile$ = new BehaviorSubject(JSON.parse(localStorage.getItem("profile")));
+
   }
 
 
@@ -77,6 +79,7 @@ export class AuthService {
     localStorage.setItem("access_token", authResult.accessToken);
     localStorage.setItem("id_token", authResult.idToken);
     localStorage.setItem("expires_at", expiresAt);
+    this.scheduleRenewal();
   }
 
   public logout(): void {
@@ -84,12 +87,34 @@ export class AuthService {
     localStorage.removeItem("access_token");
     localStorage.removeItem("id_token");
     localStorage.removeItem("expires_at");
+    localStorage.removeItem("profile");
     // Go back to the home route
     this.clearRedirect();
     this.router.navigate(["/"]);
     this.userProfile$.next(null);
+    this.auth0.logout({
+      clientId: "1DgxLrxeSeDL5mC81k8Af61s4Ko3okIq"    });
 
   }
+
+  renewToken() {
+    // Check for valid Auth0 session
+    this.auth0.checkSession({}, (err, authResult) => {
+      if (authResult && authResult.accessToken) {
+        this.setSession(authResult);
+        this.getProfile(authResult);
+      } else {
+        this.clearExpiration();
+      }
+    });
+  }
+
+  private clearExpiration() {
+    // Remove token expiration from localStorage
+    localStorage.removeItem('expires_at');
+  }
+
+
 
   public isAuthenticated(): boolean {
     // Check whether the current time is past the
@@ -103,8 +128,43 @@ export class AuthService {
     this.auth0.client.userInfo(authresult.accessToken, (err, profile) => {
       if (profile) {
         self.userProfile$.next(profile);
+        localStorage.setItem("profile",JSON.stringify(profile));
         this.redirect();
       }
     });
+  }
+
+  public scheduleRenewal() {
+    if (!this.isAuthenticated()) { return; }
+    this.unscheduleRenewal();
+
+    const expiresAt = JSON.parse(window.localStorage.getItem('expires_at'));
+
+    const expiresIn$ = of(expiresAt).pipe(
+      mergeMap(
+        expiresAt => {
+          const now = Date.now();
+          // Use timer to track delay until expiration
+          // to run the refresh at the proper time
+          return timer(Math.max(1, expiresAt - now));
+        }
+      )
+    );
+
+    // Once the delay time from above is
+    // reached, get a new JWT and schedule
+    // additional refreshes
+    this.refreshSub = expiresIn$.subscribe(
+      () => {
+        this.renewToken();
+        this.scheduleRenewal();
+      }
+    );
+  }
+
+  public unscheduleRenewal() {
+    if (this.refreshSub) {
+      this.refreshSub.unsubscribe();
+    }
   }
 }

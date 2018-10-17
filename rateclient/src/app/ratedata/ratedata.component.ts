@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort } from '@angular/material';
 import { RatedataDataSource } from './ratedata-datasource';
+import { BackendService } from '../shared/backend.service';
 
 @Component({
   selector: 'app-ratedata',
@@ -13,9 +14,12 @@ export class RatedataComponent implements OnInit {
   dataSource: RatedataDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['id', 'name'];
+  displayedColumns = ['data', 'robor3M','robor6M'];
+ constructor(private service:BackendService){
 
+ }
   ngOnInit() {
-    this.dataSource = new RatedataDataSource(this.paginator, this.sort);
+    this.dataSource = new RatedataDataSource(this.paginator, this.sort,this.service);
+
   }
 }

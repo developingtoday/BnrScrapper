@@ -24,10 +24,9 @@ export class SidenavComponent {
     private auth: AuthService
   ) {
     this.useProfile$ = this.auth.userProfileSubject;
-
   }
 
-  private logout(){
+  private logout() {
     this.auth.logout();
   }
 }
