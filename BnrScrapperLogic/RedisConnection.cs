@@ -9,8 +9,7 @@ namespace BnrScrapperLogic
     {
         private static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
         {
-            string cacheConnection =
-                "";
+            string cacheConnection = Environment.GetEnvironmentVariable("RedisConnection");
             return ConnectionMultiplexer.Connect(cacheConnection);
         });
 
