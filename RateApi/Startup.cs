@@ -44,8 +44,10 @@ namespace RateApi
         {
          
             services.AddSingleton<TelemetryClient>(new TelemetryClient());
+            services.AddScoped<ILoanRepository, LoanRepository>();
             services.AddTransient<IRateRepository>(x =>
                 new DapperRateRepository(Environment.GetEnvironmentVariable("DatabaseConnectionString")));
+
             string domain = $"https://{Configuration["Auth0:Domain"]}/";
             services.AddAuthentication(o =>
             {
