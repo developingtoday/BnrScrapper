@@ -18,6 +18,12 @@ namespace RateApi.Controllers
             _loanRepository = loanRepository;
         }
 
+        [HttpGet("email/{email}")]
+        public List<LoanInformation> GetInformation(string email)
+        {
+            return _loanRepository.GetLoansByEmail(email);
+        }
+
         [HttpGet]
         public LoanInformation GetInformation(Guid loanId)
         {
@@ -25,7 +31,7 @@ namespace RateApi.Controllers
         }
 
         [HttpPost]
-        public bool SaveLoanInformation(LoanInformation information)
+        public bool SaveLoanInformation([FromBody]LoanInformation information)
         {
             if (information.Id == Guid.Empty) information.Id = Guid.NewGuid();
             return _loanRepository.SaveLoan(information);

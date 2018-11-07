@@ -7,6 +7,7 @@ namespace BnrScrapperLogic.Loan
     public class LoanInformation
     {
         public Guid Id { get; set; }
+
         public string Email { get; set; }
 
         public double BankRate { get; set; }
@@ -15,6 +16,11 @@ namespace BnrScrapperLogic.Loan
 
         public bool SendEmail { get; set; }
 
-        public Loan Loan { get; set; }
+        public decimal Ammount { get; set; }
+
+        public DateTime RateDateOfPayment { get; set; }
+
+        public int Months { get; set; }
+        
     }
 }

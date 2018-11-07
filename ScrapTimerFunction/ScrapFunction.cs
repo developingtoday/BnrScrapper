@@ -17,7 +17,7 @@ namespace ScrapTimerFunction
     {
        
         [FunctionName("BnrRoborFunction")]
-        public static void Run([TimerTrigger("0 0/6 8-8  * * 1-5")]TimerInfo myTimer, TraceWriter log)
+        public static void Run([TimerTrigger("0 0/6 8-9  * * 1-5")]TimerInfo myTimer, TraceWriter log)
         {
             try
             {
