@@ -21,6 +21,31 @@ namespace BnrScrapperLogic
         {
             return $"{nameof(Data)}: {Data}, {nameof(Robid3M)}: {Robid3M}, {nameof(Robid6M)}: {Robid6M}, {nameof(Robid9M)}: {Robid9M}, {nameof(Robid12M)}: {Robid12M}, {nameof(Robor3M)}: {Robor3M}, {nameof(Robor6M)}: {Robor6M}, {nameof(Robor9M)}: {Robor9M}, {nameof(Robor12M)}: {Robor12M}";
         }
+
+        public decimal GetRate(BankMargin margin)
+        {
+            switch (margin)
+            {
+                case BankMargin.Robor12M:
+                    return Robor12M;
+                case BankMargin.Robor9M:
+                    return Robor9M;
+                case BankMargin.Robor6M:
+                    return Robor6M;
+                case BankMargin.Robor3M:
+                    return Robor3M;
+                default:
+                    return Robor3M;
+            }
+        }
+    }
+
+    public enum BankMargin
+    {
+        Robor3M,
+        Robor6M,
+        Robor9M,
+        Robor12M
     }
 
     public class EuroRonRate

@@ -12,10 +12,13 @@ namespace RateApi.Controllers
     public class LoanController:Controller
     {
         private readonly ILoanRepository _loanRepository;
+        private readonly IRateRepository _rateRepository;
 
-        public LoanController(ILoanRepository loanRepository)
+
+        public LoanController(ILoanRepository loanRepository, IRateRepository rateRepository)
         {
             _loanRepository = loanRepository;
+            _rateRepository = rateRepository;
         }
 
         [HttpGet("email/{email}")]
@@ -28,6 +31,20 @@ namespace RateApi.Controllers
         public LoanInformation GetInformation(Guid loanId)
         {
             return _loanRepository.GetLoan(loanId);
+        }
+
+        [HttpGet("{loanId}/details")]
+        public LoanDetails GetLoanDetails(Guid loanId)
+        {
+            var loanInformation = _loanRepository.GetLoan(loanId);
+            var latestRates = _rateRepository.GetRoborRecent();
+            var currentRate = loanInformation.BankRate + (double) latestRates.GetRate(loanInformation.BankMargin);
+            var loan = new Loan(loanInformation.Ammount, loanInformation.RateDateOfPayment, currentRate,
+                loanInformation.Months);
+            var loanDetails = new LoanDetails(loanInformation);
+            loanDetails.BankMarginRate = currentRate;
+            loanDetails.Transactions = loan.GenerateLoanTransactions().Take(5).ToArray();
+            return loanDetails;
         }
 
         [HttpPost]
