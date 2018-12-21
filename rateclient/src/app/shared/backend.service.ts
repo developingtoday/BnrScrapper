@@ -16,8 +16,9 @@ export class BackendService {
     );
   }
   getLoans(email: string): Observable<Loan[]> {
-    return this.http.get<Loan[]>(
-      `${environment.url}/Loan/email/${email}`
-    );
+    return this.http.get<Loan[]>(`${environment.url}/Loan/email/${email}`);
+  }
+  getLoanById(guid: String): Observable<Loan> {
+    return this.http.get<Loan>(`${environment.url}/Loan?loanId=${guid}`);
   }
 }

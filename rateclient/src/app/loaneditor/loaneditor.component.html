@@ -1,18 +1,9 @@
 <div style="margin-top:2.3%" class="example-container">
-    <!-- <form class="example-container" [formGroup]="options">
-      <div>
-        <label>Float label: </label>
-        <mat-radio-group formControlName="floatLabel">
-          <mat-radio-button value="auto">Auto</mat-radio-button>
-          <mat-radio-button value="always">Always</mat-radio-button>
-          <mat-radio-button value="never">Never</mat-radio-button>
-        </mat-radio-group>
-      </div>
-    </form> -->
-
     <mat-form-field
-        [hideRequiredMarker]="options.value.hideRequired"
-        [floatLabel]="auto">
+        [hideRequiredMarker]="false"
+        [floatLabel]="auto"
+        formControlName="loanName"
+        >
       <input matInput placeholder="Name" required>
     </mat-form-field>
 
@@ -35,7 +26,7 @@
         <input matInput placeholder="Fixed interest rate">
       </mat-form-field>
     <mat-form-field
-        [hideRequiredMarker]="options.value.hideRequired"
+        [hideRequiredMarker]="false"
         [floatLabel]="auto">
       <mat-select required>
         <mat-option>-- None --</mat-option>

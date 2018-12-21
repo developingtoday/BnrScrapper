@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
-import { FormGroup, FormBuilder } from "@angular/forms";
+import { FormGroup, FormBuilder, FormControl } from "@angular/forms";
+import { BackendService } from "../shared/backend.service";
+import { Loan } from "../shared/models/loan.model";
 
 @Component({
   selector: "app-loaneditor",
@@ -9,18 +11,24 @@ import { FormGroup, FormBuilder } from "@angular/forms";
   styleUrls: ["./loaneditor.component.scss"]
 })
 export class LoanEditorComponent implements OnInit, OnDestroy {
-  private id: number;
-  options: FormGroup;
+  private id: string;
+  private loan: Loan;
+  loanForm: FormGroup = new FormGroup({
+    loanName: new FormControl(""),
+    loanTransaction: new FormControl("")
+  });
   private sub: Subscription;
-  constructor(fb: FormBuilder, private route: ActivatedRoute) {
-    this.options = fb.group({
-      hideRequired: false,
-      floatLabel: "auto"
-    });
-  }
+  constructor(
+    fb: FormBuilder,
+    private route: ActivatedRoute,
+    private backendService: BackendService
+  ) {}
   ngOnInit() {
     this.sub = this.route.params.subscribe(a => {
-      this.id = +a["id"];
+      this.id = a["id"];
+      this.backendService.getLoanById(this.id).subscribe(s => {
+        this.loan = s;
+      });
     });
   }
   ngOnDestroy() {

@@ -15,7 +15,7 @@ export class LoanComponent implements OnInit {
   dataSource: LoanDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ["rateofDatePayment", "bankRate"];
+  displayedColumns = ["name","rateofDatePayment", "bankRate"];
 
   constructor(
     private backendService: BackendService,

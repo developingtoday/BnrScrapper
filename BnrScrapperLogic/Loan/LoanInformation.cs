@@ -10,6 +10,8 @@ namespace BnrScrapperLogic.Loan
 
         public string Email { get; set; }
 
+        public string Name { get; set; }
+
         public double BankRate { get; set; }
 
         public BankMargin BankMargin { get; set; }

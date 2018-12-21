@@ -5,6 +5,7 @@ export interface Loan {
   bankMargin: number;
   sendEmail: boolean;
   ammount: number;
-  rateofDatePayment: Date;
+  rateDateOfPayment: Date;
   months: number;
+  name:string;
 }

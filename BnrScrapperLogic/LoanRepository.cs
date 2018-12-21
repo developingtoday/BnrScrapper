@@ -39,7 +39,7 @@ namespace BnrScrapperLogic
             var conn = RedisConnection.Connection;
             var db = conn.GetDatabase(2);
             if (!db.KeyExists(email)) return new List<LoanInformation>(0);
-            var loansByEmail = db.ListRange(email, 0, db.ListLength(email)).Select(a=>(RedisKey)a.ToString()).ToArray();
+            var loansByEmail = db.ListRange(email, 0, -1).Select(a=>(RedisKey)a.ToString()).ToArray();
             var infos=db.StringGet(loansByEmail).Select(a=>JsonConvert.DeserializeObject<LoanInformation>(a)).ToList();
             return infos;
         }

@@ -3,16 +3,17 @@
         <mat-icon aria-label="Add loan">add</mat-icon>
       </button>
   <table mat-table #table [dataSource]="dataSource" matSort aria-label="Elements">
-    <!-- Id Column -->
+      <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let row" style="text-align: center">{{row.name}}</td>
+        </ng-container>
     <ng-container matColumnDef="rateofDatePayment">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Rate Date of Payment</th>
-      <td mat-cell *matCellDef="let row">{{row.rateofDatePayment}}</td>
+      <td mat-cell *matCellDef="let row" style="text-align: center">{{row.rateDateOfPayment | date:'dd/mm'}}</td>
     </ng-container>
-
-    <!-- Name Column -->
     <ng-container matColumnDef="bankRate">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Bank Rate</th>
-      <td mat-cell *matCellDef="let row">{{row.bankRate}}</td>
+      <td mat-cell *matCellDef="let row" style="text-align: center">{{row.bankRate}}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
